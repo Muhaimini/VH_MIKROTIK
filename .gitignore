@@ -1,0 +1,20 @@
+# Ignore root-level .env file
+.env
+
+# Ignore dependencies
+# vh_mikrotik_client/node_modules/
+vh_mikrotik_server/vendor/bundle
+
+# Ignore logs & cache
+logs/
+vh_mikrotik_server/log/
+vh_mikrotik_server/tmp/
+vh_mikrotik_client/.next/
+vh_mikrotik_client/.turbo/
+
+# Ignore Docker files
+docker-compose.override.yml
+vh_mikrotik_server/tmp/pids/server.pid
+
+# Ignore OS-specific files
+.DS_Store

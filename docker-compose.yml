@@ -1,0 +1,74 @@
+services:
+  redis:
+    image: redis:7
+    restart: always
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    networks:
+      - mikrotik_integration_mikrotik_net
+
+  vh_mikrotik_server:
+    build: ./vh_mikrotik_server
+    env_file:
+      - .env
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./vh_mikrotik_server:/app
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: "${DATABASE_URL}"
+      REDIS_URL: "${REDIS_URL}"
+    networks:
+      - mikrotik_integration_mikrotik_net
+
+  localstack:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - SERVICES=s3
+      - LOCALSTACK_HOST=localstack
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "localstack_data:/var/lib/localstack/data"
+    restart: always
+    networks:
+      - mikrotik_integration_mikrotik_net
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: "${DATABASE_USERNAME}"
+      POSTGRES_PASSWORD: "${DATABASE_PASSWORD}"
+      POSTGRES_DB: "${DATABASE_NAME}"
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - mikrotik_integration_mikrotik_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pg_data:
+  localstack_data:
+
+networks:
+  mikrotik_integration_mikrotik_net:
+    driver: bridge
+  localstack_network:
+    driver: bridge
