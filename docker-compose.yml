@@ -34,15 +34,20 @@ services:
     ports:
       - "4566:4566"
     environment:
+      - LOCALSTACK_DISABLE_SSL=true
       - DOCKER_HOST=unix:///var/run/docker.sock
       - SERVICES=s3
       - LOCALSTACK_HOST=localstack
+      - DEBUG=1
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "localstack_data:/var/lib/localstack/data"
     restart: always
     networks:
       - mikrotik_integration_mikrotik_net
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
 
   db:
     image: postgres:15

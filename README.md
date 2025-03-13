@@ -23,3 +23,6 @@ aws --endpoint-url=http://localhost:4566 s3 ls s3://vh-mikrotik-bucket/mikrotik/
 aws format URL:
 "#{base_url}/#{aws_bucket}/mikrotik/#{file_name}"
 http://localhost:4566/vh-mikrotik-bucket/mikrotik/backup_20250312181732.backup
+
+logger:
+docker-compose logs --follow
